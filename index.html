@@ -2392,12 +2392,11 @@
 
   function applyLanguagePreset(language) {
     if (language === currentLanguage) {
-      initGlassInteractions();
-  updateLanguageButtons();
+      updateLanguageButtons();
       return;
     }
 
-    const label = language === "en" ? "영문" : "국문";
+    const label = language === "en" ? "ENG" : "KOR";
     const ok = confirm(`${label} 뉴스레터 기본값으로 전환할까요? 현재 입력 중인 내용은 저장하지 않으면 사라질 수 있습니다.`);
     if (!ok) return;
 
@@ -2409,7 +2408,7 @@
     sections = JSON.parse(JSON.stringify(template.sections));
 
     renderSocialEditors();
-    renderSectionEditors();
+    enforceDefaultEditorPanelState();
     updateLanguageButtons();
     refresh(false);
     showToast(`${label} 템플릿으로 전환되었습니다.`);
@@ -2495,6 +2494,9 @@
 
   
   function initGlassInteractions() {
+    if (window.__glassInteractionsReady) return;
+    window.__glassInteractionsReady = true;
+
     document.addEventListener("pointerdown", (event) => {
       const button = event.target.closest("button");
       if (!button || button.disabled) return;
@@ -2613,6 +2615,84 @@
 
   function hasAnySavedLanguage(savedMap, dateKey) {
     return getSavedLanguagesForDate(savedMap, dateKey).length > 0;
+  }
+
+  function setStaticSectionCollapsed(sectionId, shouldCollapse) {
+    const sectionEl = document.getElementById(sectionId);
+    if (!sectionEl) return;
+
+    sectionEl.classList.toggle("collapsed", shouldCollapse);
+
+    const button = sectionEl.querySelector(".collapse-btn");
+    if (button) {
+      button.textContent = shouldCollapse ? "펼치기" : "접기";
+    }
+  }
+
+  function enforceDefaultEditorPanelState() {
+    // 기본 패널 상태: 메인 콘텐츠만 열고, 나머지 편집 창은 모두 닫습니다.
+    sections.forEach((section) => {
+      section.collapsed = true;
+    });
+
+    renderSectionEditors();
+
+    setStaticSectionCollapsed("basicSection", true);
+    setStaticSectionCollapsed("mainSection", false);
+  }
+
+  function findLatestSavedNewsletter() {
+    const savedMap = getSavedMap();
+    let latest = null;
+
+    Object.keys(savedMap).forEach((dateKey) => {
+      const entry = normalizeDateEntry(savedMap[dateKey]);
+
+      ["ko", "en"].forEach((lang) => {
+        const state = entry[lang];
+        if (!state) return;
+
+        const savedAtValue = state.savedAt || `${dateKey}T00:00:00`;
+        const savedAtTime = new Date(savedAtValue).getTime();
+
+        if (Number.isNaN(savedAtTime)) return;
+
+        if (!latest || savedAtTime > latest.savedAtTime) {
+          latest = {
+            dateKey,
+            lang,
+            state,
+            savedAtTime
+          };
+        }
+      });
+    });
+
+    return latest;
+  }
+
+  function autoLoadLatestSavedNewsletter() {
+    const latest = findLatestSavedNewsletter();
+
+    if (!latest) {
+      return false;
+    }
+
+    applyBuilderState(latest.state);
+
+    loadedSavedDate = latest.dateKey;
+    loadedSavedLanguage = latest.lang;
+    calendarDate = parseDateKey(latest.dateKey);
+
+    enforceDefaultEditorPanelState();
+    refresh(false);
+
+    const status = document.getElementById("status");
+    if (status) {
+      status.innerHTML = `<span class="save-badge">${latest.dateKey} ${getLanguageLabel(latest.lang)} 최신 저장본 자동 로드</span>`;
+    }
+
+    return true;
   }
 
   function loadFirstSavedNewsletter(dateKey) {
@@ -3555,10 +3635,14 @@
     }
   });
 
+  initGlassInteractions();
   updateLanguageButtons();
-  renderSocialEditors();
-  renderSectionEditors();
-  refresh(false);
+
+  if (!autoLoadLatestSavedNewsletter()) {
+    renderSocialEditors();
+    enforceDefaultEditorPanelState();
+    refresh(false);
+  }
 </script>
 </body>
 </html>
