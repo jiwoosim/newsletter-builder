@@ -2001,6 +2001,121 @@
     }
   }
 
+
+  /* Category icon upgrade */
+  .section-dot {
+    display: none !important;
+  }
+
+  .section-icon {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: var(--brand, #0A7BEF);
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.76), rgba(255,255,255,0.38));
+    border: 1px solid rgba(255,255,255,0.72);
+    box-shadow:
+      0 8px 18px rgba(10, 123, 239, 0.12),
+      inset 0 1px 0 rgba(255,255,255,0.82);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+
+  .section-icon svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+  }
+
+  .section-icon-video { color: #007AFF; }
+  .section-icon-chart { color: #34A853; }
+  .section-icon-blog { color: #AF52DE; }
+  .section-icon-case { color: #FF9500; }
+  .section-icon-news { color: #FF3B30; }
+  .section-icon-support { color: #5856D6; }
+  .section-icon-sns { color: #00A7C7; }
+  .section-icon-main { color: #0A7BEF; }
+  .section-icon-settings { color: #64748B; }
+
+  .section-header:hover .section-icon {
+    transform: translateY(-1px) scale(1.04);
+    box-shadow:
+      0 10px 22px rgba(10, 123, 239, 0.16),
+      inset 0 1px 0 rgba(255,255,255,0.88);
+  }
+
+  .section-icon {
+    transition:
+      transform 0.2s cubic-bezier(.22,.61,.36,1),
+      box-shadow 0.2s ease,
+      background 0.2s ease;
+  }
+
+
+  /* Final requested UI adjustments */
+  .section-icon {
+    width: 22px !important;
+    height: 22px !important;
+    flex: 0 0 22px !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    color: var(--brand, #0A7BEF) !important;
+  }
+
+  .section-icon svg {
+    width: 21px !important;
+    height: 21px !important;
+  }
+
+  .section-header:hover .section-icon {
+    transform: translateY(-1px) scale(1.06) !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  .danger {
+    background: #E11D48 !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(225, 29, 72, 0.82) !important;
+    box-shadow:
+      0 10px 22px rgba(225, 29, 72, 0.20),
+      inset 0 1px 0 rgba(255,255,255,0.22) !important;
+  }
+
+  .danger:hover {
+    background: #BE123C !important;
+    color: #FFFFFF !important;
+    border-color: #BE123C !important;
+    box-shadow:
+      0 14px 28px rgba(190, 18, 60, 0.24),
+      inset 0 1px 0 rgba(255,255,255,0.24) !important;
+  }
+
+  .save-action {
+    background:
+      linear-gradient(135deg, #0A7BEF 0%, #005BD7 100%) !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(10, 123, 239, 0.88) !important;
+    box-shadow:
+      0 12px 26px rgba(10, 123, 239, 0.28),
+      inset 0 1px 0 rgba(255,255,255,0.28) !important;
+  }
+
+  .save-action:hover {
+    background:
+      linear-gradient(135deg, #1687FF 0%, #0052C2 100%) !important;
+    color: #FFFFFF !important;
+  }
+
 </style>
 </head>
 <body>
@@ -2031,7 +2146,7 @@
     <div class="section" id="basicSection">
       <div class="section-header">
         <div class="section-header-main">
-          <span class="section-dot"></span>
+          <span class="section-icon section-icon-settings" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 13.4c.1-.5.1-.9.1-1.4s0-.9-.1-1.4l2-1.5-2-3.4-2.4 1a7 7 0 0 0-2.4-1.4L14.3 3h-4.6l-.4 2.3A7 7 0 0 0 7 6.7l-2.4-1-2 3.4 2 1.5c-.1.5-.1.9-.1 1.4s0 .9.1 1.4l-2 1.5 2 3.4 2.4-1a7 7 0 0 0 2.4 1.4l.4 2.3h4.6l.4-2.3a7 7 0 0 0 2.4-1.4l2.4 1 2-3.4-2.2-1.5Z" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linejoin="round"/></svg></span>
           <h2 class="section-name">기본 설정</h2>
         </div>
         <div class="section-header-tools">
@@ -2065,7 +2180,7 @@
         <div class="section" style="margin-top:14px;">
           <div class="section-header">
             <div class="section-header-main">
-              <span class="section-dot"></span>
+              <span class="section-icon section-icon-sns" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="7" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="7" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="17" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.2 10.8l5.6-2.7M9.2 13.2l5.6 2.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
               <h2 class="section-name">푸터 SNS</h2>
             </div>
             <div class="section-header-tools">
@@ -2083,7 +2198,7 @@
     <div class="section" id="mainSection">
       <div class="section-header">
         <div class="section-header-main">
-          <span class="section-dot"></span>
+          <span class="section-icon section-icon-main" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4.5h14v15H5v-15Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 8h8M8 11.5h8M8 15h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M17.2 15.4l.5 1.1 1.2.2-.9.8.2 1.2-1-.6-1 .6.2-1.2-.9-.8 1.2-.2.5-1.1Z" fill="currentColor"/></svg></span>
           <h2 class="section-name">메인 콘텐츠</h2>
         </div>
         <div class="section-header-tools">
@@ -2271,7 +2386,7 @@
         },
         {
           id: makeId(),
-          label: "보도 자료 / 기사",
+          label: "보도 자료",
           enabled: false,
           collapsed: true,
           moreText: "더 많은 보도 자료 알아보기",
@@ -2999,7 +3114,7 @@
     },
     {
       id: makeId(),
-      label: "보도 자료 / 기사",
+      label: "보도 자료",
       enabled: false,
       collapsed: true,
       moreText: "더 많은 보도 자료 알아보기",
@@ -3047,6 +3162,48 @@
     if (button) {
       button.textContent = section.classList.contains("collapsed") ? "펼치기" : "접기";
     }
+  }
+
+
+  function iconSvg(type) {
+    const icons = {
+      settings: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 13.4c.1-.5.1-.9.1-1.4s0-.9-.1-1.4l2-1.5-2-3.4-2.4 1a7 7 0 0 0-2.4-1.4L14.3 3h-4.6l-.4 2.3A7 7 0 0 0 7 6.7l-2.4-1-2 3.4 2 1.5c-.1.5-.1.9-.1 1.4s0 .9.1 1.4l-2 1.5 2 3.4 2.4-1a7 7 0 0 0 2.4 1.4l.4 2.3h4.6l.4-2.3a7 7 0 0 0 2.4-1.4l2.4 1 2-3.4-2.2-1.5Z" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linejoin="round"/></svg>`,
+      main: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5v-15Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 8h8M8 11.5h8M8 15h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M17.2 15.4l.5 1.1 1.2.2-.9.8.2 1.2-1-.6-1 .6.2-1.2-.9-.8 1.2-.2.5-1.1Z" fill="currentColor"/></svg>`,
+      video: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="6" width="17" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 9.2v5.6l5-2.8-5-2.8Z" fill="currentColor"/></svg>`,
+      chart: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="6" y="11" width="3" height="6.5" rx="1" fill="currentColor"/><rect x="10.5" y="7" width="3" height="10.5" rx="1" fill="currentColor"/><rect x="15" y="9.5" width="3" height="8" rx="1" fill="currentColor"/><path d="M6.5 8.2l4-3 3.2 2.3 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+      blog: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19l.9-3.7L16.7 4.5a2.1 2.1 0 0 1 3 3L8.9 18.3 5 19Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14.9 6.3l2.8 2.8M5 21h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+      case: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM15.8 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M3.8 19.3c.5-3.2 2.2-5.3 4.7-5.3s4.2 2.1 4.7 5.3M13.3 14.4c2.7.2 4.3 1.9 4.9 4.9" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>`,
+      news: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h11.5v13H5V6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M16.5 9H20v7.5a2.5 2.5 0 0 1-2.5 2.5h-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 9h5M8 12h5M8 15h3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>`,
+      support: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h9l3 3v12H6v-15Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M15 4.5v3h3M9 11h6M9 14.5h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+      sns: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="7" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="17" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.2 10.8l5.6-2.7M9.2 13.2l5.6 2.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+      default: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5h14v13H5v-13Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 9h8M8 12h8M8 15h5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>`
+    };
+
+    return icons[type] || icons.default;
+  }
+
+  function getCategoryIconType(label) {
+    const text = String(label || "").toLowerCase();
+
+    if (text.includes("video") || text.includes("비디오") || text.includes("short")) return "video";
+    if (text.includes("infographic") || text.includes("인포그래픽") || text.includes("graph")) return "chart";
+    if (text.includes("blog") || text.includes("블로그")) return "blog";
+    if (text.includes("case") || text.includes("고객") || text.includes("사례")) return "case";
+    if (text.includes("news") || text.includes("press") || text.includes("보도") || text.includes("기사") || text.includes("뉴스")) return "news";
+    if (text.includes("support") || text.includes("hub") || text.includes("지원")) return "support";
+    if (text.includes("sns") || text.includes("social") || text.includes("푸터")) return "sns";
+    if (text.includes("main") || text.includes("메인")) return "main";
+    if (text.includes("setting") || text.includes("기본") || text.includes("설정")) return "settings";
+
+    return "default";
+  }
+
+  function sectionIcon(typeOrLabel) {
+    const type = ["settings", "main", "video", "chart", "blog", "case", "news", "support", "sns", "default"].includes(typeOrLabel)
+      ? typeOrLabel
+      : getCategoryIconType(typeOrLabel);
+
+    return `<span class="section-icon section-icon-${type}">${iconSvg(type)}</span>`;
   }
 
   function renderSocialEditors() {
@@ -3143,7 +3300,7 @@
       box.innerHTML = `
         <div class="section-header">
           <div class="section-header-main">
-            <span class="section-dot"></span>
+            ${sectionIcon(section.label)}
             <h2 class="section-name">${esc(section.label || "새 카테고리")}</h2>
           </div>
           <div class="section-header-tools">
@@ -3605,21 +3762,42 @@
     }
   }
 
+  function getDownloadDatePrefix() {
+    const now = new Date();
+    const year = String(now.getFullYear()).slice(-2);
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+
+    return `${year}${month}${day}`;
+  }
+
+  function getDownloadFileName(type) {
+    const datePrefix = getDownloadDatePrefix();
+    const extension = type === "txt" ? "txt" : "html";
+
+    if (currentLanguage === "en") {
+      return `${datePrefix} UNION biometrics NewsLetter.${extension}`;
+    }
+
+    return `${datePrefix} 유니온바이오메트릭스 뉴스레터.${extension}`;
+  }
+
   function downloadFile(type) {
     const html = document.getElementById("outputHtml").value || buildEmailHtml();
     const blob = new Blob([html], { type: "text/html;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    const date = new Date().toISOString().slice(0, 10);
 
     a.href = url;
-    a.download = `union-newsletter-${date}.${type === "txt" ? "txt" : "html"}`;
+    a.download = getDownloadFileName(type);
 
     document.body.appendChild(a);
     a.click();
     a.remove();
 
     URL.revokeObjectURL(url);
+
+    showToast(`${a.download} 다운로드를 시작했습니다.`);
   }
 
   document.querySelectorAll("[data-main]").forEach((el) => {
