@@ -834,8 +834,8 @@
     </p>
 
     <div class="language-switch" aria-label="뉴스레터 언어 선택">
-      <button id="langKoBtn" class="active" type="button" onclick="applyLanguagePreset('ko')">국문</button>
-      <button id="langEnBtn" type="button" onclick="applyLanguagePreset('en')">English</button>
+      <button id="langKoBtn" class="active" type="button" onclick="applyLanguagePreset('ko')">KOR</button>
+      <button id="langEnBtn" type="button" onclick="applyLanguagePreset('en')">ENG</button>
     </div>
 
     <div class="quick-tools">
@@ -994,6 +994,7 @@
   const STORAGE_KEY = "unionNewsletterBuilderSaves_v1";
   let calendarDate = new Date();
   let loadedSavedDate = "";
+  let loadedSavedLanguage = "";
 
   let currentLanguage = "ko";
 
@@ -1337,6 +1338,67 @@
     refresh(false);
   }
 
+
+  function getLanguageKey() {
+    return currentLanguage === "en" ? "en" : "ko";
+  }
+
+  function getLanguageLabel(lang) {
+    return lang === "en" ? "ENG" : "KOR";
+  }
+
+  function normalizeDateEntry(entry) {
+    if (!entry) {
+      return {};
+    }
+
+    // Legacy format: savedMap[date] = state
+    if (entry.mainFields || entry.sections || entry.socials) {
+      const legacyLang = entry.currentLanguage === "en" ? "en" : "ko";
+      return { [legacyLang]: entry };
+    }
+
+    return entry;
+  }
+
+  function getDateEntry(savedMap, dateKey) {
+    const entry = normalizeDateEntry(savedMap[dateKey]);
+    savedMap[dateKey] = entry;
+    return entry;
+  }
+
+  function getSavedLanguagesForDate(savedMap, dateKey) {
+    const entry = normalizeDateEntry(savedMap[dateKey]);
+    return ["ko", "en"].filter(lang => Boolean(entry[lang]));
+  }
+
+  function hasAnySavedLanguage(savedMap, dateKey) {
+    return getSavedLanguagesForDate(savedMap, dateKey).length > 0;
+  }
+
+  function loadFirstSavedNewsletter(dateKey) {
+    const savedMap = getSavedMap();
+    const entry = getDateEntry(savedMap, dateKey);
+    const preferred = getLanguageKey();
+
+    if (entry[preferred]) {
+      loadSavedNewsletter(dateKey, preferred);
+      return;
+    }
+
+    if (entry.ko) {
+      loadSavedNewsletter(dateKey, "ko");
+      return;
+    }
+
+    if (entry.en) {
+      loadSavedNewsletter(dateKey, "en");
+      return;
+    }
+
+    alert("해당 날짜의 저장본을 찾을 수 없습니다.");
+  }
+
   function saveCurrentNewsletter() {
     const defaultDate = loadedSavedDate || todayKey();
     const dateKey = prompt("저장할 발행일을 입력하세요. 예: 2026-05-29", defaultDate);
@@ -1350,16 +1412,23 @@
       return;
     }
 
+    const lang = getLanguageKey();
     const savedMap = getSavedMap();
-    savedMap[normalized] = collectBuilderState();
+    const entry = getDateEntry(savedMap, normalized);
+
+    // 하루에 언어별 마지막 저장본 1개만 유지합니다.
+    entry[lang] = collectBuilderState();
+    savedMap[normalized] = entry;
+
     setSavedMap(savedMap);
 
     loadedSavedDate = normalized;
+    loadedSavedLanguage = lang;
     calendarDate = parseDateKey(normalized);
 
     const status = document.getElementById("status");
-    status.innerHTML = `<span class="save-badge">${normalized} 저장 완료</span>`;
-    showToast(`${normalized} 저장되었습니다.`);
+    status.innerHTML = `<span class="save-badge">${normalized} ${getLanguageLabel(lang)} 저장 완료</span>`;
+    showToast(`${normalized} ${getLanguageLabel(lang)} 저장되었습니다.`);
 
     renderCalendar();
   }
@@ -1393,8 +1462,9 @@
     if (!grid || !label || !list) return;
 
     const savedMap = getSavedMap();
-    const savedDates = Object.keys(savedMap).sort();
-    const savedDateSet = new Set(savedDates);
+    const savedDates = Object.keys(savedMap)
+      .filter(dateKey => hasAnySavedLanguage(savedMap, dateKey))
+      .sort();
 
     const year = calendarDate.getFullYear();
     const month = calendarDate.getMonth();
@@ -1416,7 +1486,8 @@
 
       const dateKey = formatDateKey(current);
       const isCurrentMonth = current.getMonth() === month;
-      const isSaved = savedDateSet.has(dateKey);
+      const savedLangs = getSavedLanguagesForDate(savedMap, dateKey);
+      const isSaved = savedLangs.length > 0;
       const isToday = dateKey === today;
 
       const button = document.createElement("button");
@@ -1431,8 +1502,8 @@
       button.textContent = current.getDate();
 
       if (isSaved) {
-        button.title = `${dateKey} 저장본 불러오기`;
-        button.addEventListener("click", () => loadSavedNewsletter(dateKey));
+        button.title = `${dateKey} 저장본: ${savedLangs.map(getLanguageLabel).join(" / ")}`;
+        button.addEventListener("click", () => loadFirstSavedNewsletter(dateKey));
       } else {
         button.disabled = true;
       }
@@ -1450,56 +1521,84 @@
       return;
     }
 
-    list.innerHTML = monthSavedDates.map(date => {
-      const savedAt = savedMap[date]?.savedAt ? new Date(savedMap[date].savedAt).toLocaleString("ko-KR") : "";
-      return `
-        <div class="saved-row">
-          <span><strong>${date}</strong><br><small>${esc(savedAt)}</small></span>
-          <button class="ghost" type="button" onclick="loadSavedNewsletter('${date}')">불러오기</button>
-          <button class="danger" type="button" onclick="deleteSavedNewsletter('${date}')">삭제</button>
-        </div>
-      `;
-    }).join("");
+    const rows = [];
+
+    monthSavedDates.forEach(date => {
+      const entry = getDateEntry(savedMap, date);
+
+      ["ko", "en"].forEach(lang => {
+        const state = entry[lang];
+        if (!state) return;
+
+        const savedAt = state.savedAt ? new Date(state.savedAt).toLocaleString("ko-KR") : "";
+
+        rows.push(`
+          <div class="saved-row">
+            <span><strong>${date}</strong> <b>${getLanguageLabel(lang)}</b><br><small>${esc(savedAt)}</small></span>
+            <button class="ghost" type="button" onclick="loadSavedNewsletter('${date}', '${lang}')">불러오기</button>
+            <button class="danger" type="button" onclick="deleteSavedNewsletter('${date}', '${lang}')">삭제</button>
+          </div>
+        `);
+      });
+    });
+
+    list.innerHTML = rows.join("");
   }
 
-  function loadSavedNewsletter(dateKey) {
+  function loadSavedNewsletter(dateKey, lang) {
     const savedMap = getSavedMap();
-    const state = savedMap[dateKey];
+    const entry = getDateEntry(savedMap, dateKey);
+    const language = lang || getLanguageKey();
+    const state = entry[language];
 
     if (!state) {
-      alert("해당 날짜의 저장본을 찾을 수 없습니다.");
+      alert("해당 날짜/언어의 저장본을 찾을 수 없습니다.");
       return;
     }
 
-    const ok = confirm(`${dateKey} 저장본을 불러올까요? 현재 입력 중인 내용은 저장하지 않으면 사라질 수 있습니다.`);
+    const ok = confirm(`${dateKey} ${getLanguageLabel(language)} 저장본을 불러올까요? 현재 입력 중인 내용은 저장하지 않으면 사라질 수 있습니다.`);
     if (!ok) return;
 
     applyBuilderState(state);
     loadedSavedDate = dateKey;
+    loadedSavedLanguage = language;
     calendarDate = parseDateKey(dateKey);
 
     const status = document.getElementById("status");
-    status.innerHTML = `<span class="save-badge">${dateKey} 저장본을 불러왔습니다.</span>`;
+    status.innerHTML = `<span class="save-badge">${dateKey} ${getLanguageLabel(language)} 저장본을 불러왔습니다.</span>`;
+    showToast(`${dateKey} ${getLanguageLabel(language)} 저장본을 불러왔습니다.`);
 
     closeCalendar();
   }
 
-  function deleteSavedNewsletter(dateKey) {
-    const ok = confirm(`${dateKey} 저장본을 삭제할까요?`);
+  function deleteSavedNewsletter(dateKey, lang) {
+    const language = lang || getLanguageKey();
+    const ok = confirm(`${dateKey} ${getLanguageLabel(language)} 저장본을 삭제할까요?`);
     if (!ok) return;
 
     const savedMap = getSavedMap();
-    delete savedMap[dateKey];
+    const entry = getDateEntry(savedMap, dateKey);
+
+    delete entry[language];
+
+    if (!entry.ko && !entry.en) {
+      delete savedMap[dateKey];
+    } else {
+      savedMap[dateKey] = entry;
+    }
+
     setSavedMap(savedMap);
 
-    if (loadedSavedDate === dateKey) {
+    if (loadedSavedDate === dateKey && loadedSavedLanguage === language) {
       loadedSavedDate = "";
+      loadedSavedLanguage = "";
     }
 
     renderCalendar();
 
     const status = document.getElementById("status");
-    status.textContent = `${dateKey} 저장본이 삭제되었습니다.`;
+    status.textContent = `${dateKey} ${getLanguageLabel(language)} 저장본이 삭제되었습니다.`;
+    showToast(`${dateKey} ${getLanguageLabel(language)} 저장본이 삭제되었습니다.`);
   }
 
   let socials = [
