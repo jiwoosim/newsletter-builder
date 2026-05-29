@@ -1,0 +1,1064 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UNION biometrics Newsletter Builder - Full Sections</title>
+  <style>
+  :root {
+    --brand: #003DA6;
+    --brand-dark: #002B76;
+    --ink: #111827;
+    --muted: #6B7280;
+    --line: #E5E7EB;
+    --soft-line: #EEF2F7;
+    --bg: #EEF2F7;
+    --panel: #FFFFFF;
+    --card: #FFFFFF;
+    --card-soft: #F8FAFC;
+    --danger-bg: #FEE2E2;
+    --danger-text: #991B1B;
+    --success: #059669;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 10px 28px rgba(15, 23, 42, 0.08);
+    --radius-lg: 18px;
+    --radius-md: 12px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    background: var(--bg);
+  }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", Arial, sans-serif;
+    background:
+      radial-gradient(circle at top left, rgba(0, 61, 166, 0.10), transparent 34%),
+      linear-gradient(135deg, #F8FAFC 0%, #EEF2F7 45%, #E5EAF3 100%);
+    color: var(--ink);
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 460px minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  .panel {
+    background: rgba(255, 255, 255, 0.92);
+    border-right: 1px solid rgba(226, 232, 240, 0.9);
+    padding: 22px;
+    overflow-y: auto;
+    max-height: 100vh;
+    backdrop-filter: blur(12px);
+  }
+
+  .preview {
+    padding: 28px;
+    overflow-y: auto;
+    max-height: 100vh;
+  }
+
+  h1 {
+    position: relative;
+    margin: 0 0 8px;
+    padding-left: 14px;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: -0.04em;
+    color: #0F172A;
+  }
+
+  h1::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 3px;
+    width: 5px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--brand);
+  }
+
+  .sub {
+    margin: 0 0 20px;
+    padding: 12px 14px;
+    border: 1px solid #DBEAFE;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%);
+    font-size: 12.5px;
+    color: #475569;
+    line-height: 1.55;
+  }
+
+  .section {
+    position: relative;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin-bottom: 14px;
+    background: var(--card);
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  }
+
+  .section:hover {
+    border-color: rgba(0, 61, 166, 0.22);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+  }
+
+  .section h2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 14px;
+    padding-bottom: 11px;
+    border-bottom: 1px solid var(--soft-line);
+    font-size: 15px;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    color: #0F172A;
+  }
+
+  .section-title-tools {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  label {
+    display: block;
+    margin: 11px 0 6px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #334155;
+    letter-spacing: -0.01em;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    border: 1px solid #D7DEE8;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 13px;
+    color: #0F172A;
+    outline: none;
+    background: #FFFFFF;
+    transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #94A3B8;
+  }
+
+  textarea {
+    min-height: 92px;
+    resize: vertical;
+    line-height: 1.55;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 4px rgba(0, 61, 166, 0.11);
+    background: #FFFFFF;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin: 18px -22px -22px;
+    padding: 14px 22px 18px;
+    border-top: 1px solid #E2E8F0;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 -14px 30px rgba(15, 23, 42, 0.07);
+    backdrop-filter: blur(12px);
+  }
+
+  button {
+    border: 0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-weight: 850;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.01em;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  .primary {
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+    color: #FFFFFF;
+    box-shadow: 0 10px 20px rgba(0, 61, 166, 0.22);
+  }
+
+  .secondary {
+    background: #EEF2F7;
+    color: #0F172A;
+    border: 1px solid #D7DEE8;
+  }
+
+  .secondary:hover {
+    background: #E2E8F0;
+  }
+
+  .ghost {
+    background: #F1F5F9;
+    color: #334155;
+    border: 1px solid #E2E8F0;
+    padding: 7px 9px;
+    font-size: 11.5px;
+    border-radius: 10px;
+  }
+
+  .ghost:hover {
+    background: #E2E8F0;
+  }
+
+  .danger {
+    background: var(--danger-bg);
+    color: var(--danger-text);
+    border: 1px solid #FECACA;
+    padding: 7px 9px;
+    font-size: 11.5px;
+    border-radius: 10px;
+  }
+
+  .item {
+    border: 1px solid #E2E8F0;
+    border-radius: 15px;
+    padding: 14px;
+    margin: 12px 0;
+    background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
+  }
+
+  .item-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .item-head strong {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    color: #0F172A;
+  }
+
+  .item-head strong::before {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--brand);
+  }
+
+  .item-tools {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 9px;
+    border: 1px solid #E2E8F0;
+    border-radius: 999px;
+    background: #F8FAFC;
+    font-size: 12px;
+    font-weight: 800;
+    color: #334155;
+    white-space: nowrap;
+  }
+
+  .toggle input {
+    width: auto;
+    accent-color: var(--brand);
+  }
+
+  .hint {
+    margin: 8px 0 0;
+    padding: 9px 10px;
+    border-radius: 11px;
+    background: #F8FAFC;
+    color: #64748B;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .preview-card {
+    max-width: 800px;
+    margin: 0 auto 22px;
+    padding: 14px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
+  }
+
+  .preview-card::before {
+    content: "Preview";
+    display: block;
+    margin: 0 0 10px;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748B;
+  }
+
+  iframe {
+    width: 100%;
+    min-height: 1040px;
+    border: 1px solid #D7DEE8;
+    border-radius: 16px;
+    background: #FFFFFF;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+  }
+
+  .output {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(10px);
+  }
+
+  .output label {
+    margin-top: 0;
+  }
+
+  .output textarea {
+    min-height: 280px;
+    border-radius: 14px;
+    background: #0F172A;
+    color: #DDE7F3;
+    font-family: Consolas, Monaco, "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    white-space: pre;
+  }
+
+  .status {
+    margin-top: 9px;
+    font-size: 12px;
+    color: var(--success);
+    min-height: 18px;
+  }
+
+  .warning {
+    margin: 10px 0 0;
+    padding: 11px 12px;
+    border: 1px solid #FED7AA;
+    border-radius: 12px;
+    background: #FFF7ED;
+    color: #9A3412;
+    font-size: 12px;
+    line-height: 1.55;
+    display: none;
+  }
+
+  .panel::-webkit-scrollbar,
+  .preview::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .panel::-webkit-scrollbar-thumb,
+  .preview::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+
+  .panel::-webkit-scrollbar-track,
+  .preview::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  @media (max-width: 1180px) {
+    .app {
+      grid-template-columns: 430px minmax(0, 1fr);
+    }
+
+    .preview {
+      padding: 22px;
+    }
+  }
+
+  @media (max-width: 980px) {
+    .app {
+      grid-template-columns: 1fr;
+    }
+
+    .panel,
+    .preview {
+      max-height: none;
+    }
+
+    .panel {
+      border-right: 0;
+      border-bottom: 1px solid #E2E8F0;
+    }
+
+    .actions {
+      margin-left: -22px;
+      margin-right: -22px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .panel,
+    .preview {
+      padding: 16px;
+    }
+
+    .section {
+      padding: 14px;
+      border-radius: 16px;
+    }
+
+    .section h2,
+    .item-head {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .section-title-tools,
+    .item-tools {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .row {
+      grid-template-columns: 1fr;
+    }
+
+    .actions {
+      grid-template-columns: 1fr;
+      margin: 18px -16px -16px;
+      padding: 12px 16px 16px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="panel">
+    <h1>뉴스레터 HTML 빌더</h1>
+    <p class="sub">
+      메인 콘텐츠와 각 섹션의 이미지·제목·본문·링크만 입력하면 발행용 HTML이 자동 생성됩니다.
+      섹션 노출 여부, 순서, 콘텐츠 개수를 화면에서 바로 조정할 수 있습니다.
+    </p>
+
+    <div class="section">
+      <h2>기본 설정</h2>
+      <label>상단 UNION 로고 URL</label>
+      <input id="logoUrl" value="https://unionbiometrics.com/wp-content/uploads/2025/10/유니온바이오메트릭스_로고_세로.png">
+      <label>상단 UBio 로고 URL</label>
+      <input id="ubioLogoUrl" value="https://unionbiometrics.com/wp-content/uploads/2023/02/UBio-Brand.png">
+      <label>홈페이지 URL</label>
+      <input id="homeUrl" value="https://unionbiometrics.com/">
+      <label>푸터 흰색 로고 URL</label>
+      <input id="footerLogoUrl" value="https://unionbiometrics.com/wp-content/uploads/2025/10/유니온바이오메트릭스-로고-흰색.png">
+      <label>Facebook URL</label>
+      <input id="facebookUrl" value="https://www.facebook.com/unionbiometrics">
+      <label>LinkedIn URL</label>
+      <input id="linkedinUrl" value="https://www.linkedin.com/company/unionbiometrics">
+      <label>YouTube URL</label>
+      <input id="youtubeUrl" value="https://www.youtube.com/@unionbiometrics">
+    </div>
+
+    <div class="section">
+      <h2>메인 콘텐츠</h2>
+      <label>히어로 이미지 URL</label>
+      <input id="heroImage" value="https://gw.unionbiometrics.com:443/UploadResource/Editor/2026/05/29/20260529_104153522_50416.png">
+      <label>히어로 링크</label>
+      <input id="heroLink" value="https://unionbiometrics.com/%EB%B3%B4%EC%95%88-%EB%B0%B1%EC%84%9C-ai-%EA%B8%B0%EB%B0%98-%EC%82%AC%EC%9D%B4%EB%B2%84-%EC%9C%84%ED%98%91%EC%97%90-%EB%8C%80%EC%9D%91%ED%95%98%EB%8A%94-%EC%B0%A8%EC%84%B8%EB%8C%80-%EC%9D%B8/">
+      <label>제목</label>
+      <input id="mainTitle" value="기존 인증 체계를 보완하는 생체인증 기반 MFA 전략">
+      <label>본문</label>
+      <textarea id="mainBody">AI가 업무 속도를 높인 만큼, 공격자의 침투 속도도 빨라지고 있습니다.
+이제 해커는 AI를 활용해 취약한 계정과 시스템을 더 빠르게 찾아내고, 반복적인 공격을 자동화할 수 있습니다.
+
+문제는 하나의 계정이 탈취되는 순간입니다. 공격자는 정상 사용자처럼 내부 시스템에 접근하고, 권한을 상승시키며, 중요 데이터를 탈취할 수 있습니다. 이제 기업 보안은 네트워크 경계 방어를 넘어, 실제 사용자를 검증하는 인증 중심 구조로 전환해야 합니다.
+
+이번 백서에서는 비밀번호와 기존 MFA의 한계를 짚고, 생체인증 기반 MFA가 AI 시대의 계정 기반 공격에 대응하는 핵심 전략이 될 수 있는 이유를 설명합니다.</textarea>
+      <div class="row">
+        <div>
+          <label>CTA 버튼 문구</label>
+          <input id="mainCtaText" value="보안 백서 원문 보러가기">
+        </div>
+        <div>
+          <label>CTA 링크</label>
+          <input id="mainCtaLink" value="https://unionbiometrics.com/%EB%B3%B4%EC%95%88-%EB%B0%B1%EC%84%9C-ai-%EA%B8%B0%EB%B0%98-%EC%82%AC%EC%9D%B4%EB%B2%84-%EC%9C%84%ED%98%91%EC%97%90-%EB%8C%80%EC%9D%91%ED%95%98%EB%8A%94-%EC%B0%A8%EC%84%B8%EB%8C%80-%EC%9D%B8/">
+        </div>
+      </div>
+    </div>
+
+    <div id="sectionEditors"></div>
+
+    <div class="actions">
+      <button class="primary" type="button" onclick="refresh()">미리보기 갱신</button>
+      <button class="secondary" type="button" onclick="copyHtml()">HTML 복사</button>
+      <button class="secondary" type="button" onclick="downloadFile('html')">HTML 다운로드</button>
+      <button class="secondary" type="button" onclick="downloadFile('txt')">TXT 다운로드</button>
+    </div>
+    <div id="status" class="status"></div>
+    <div id="warning" class="warning"></div>
+  </aside>
+
+  <main class="preview">
+    <div class="preview-card">
+      <iframe id="previewFrame" title="뉴스레터 미리보기"></iframe>
+    </div>
+    <div class="output">
+      <label>생성된 HTML 코드</label>
+      <textarea id="outputHtml" readonly></textarea>
+    </div>
+  </main>
+</div>
+
+<script>
+  const sections = {
+    videos: {
+      label: "비디오",
+      enabled: true,
+      moreText: "더 많은 비디오 알아보기",
+      moreLink: "https://www.youtube.com/@UNIONbiometricsKR",
+      items: [
+        {
+          image: "https://gw.unionbiometrics.com:443/UploadResource/Editor/2026/05/29/20260529_112527978_09774.png",
+          title: "10초동안 과연 몇 명이 지나갈 수 있을까요?",
+          desc: "얼굴인식 단말기 UBio-X Face Premium은 10초 동안 몇 명까지 얼굴을 인식할 수 있을까요? 실제 테스트를 통해 인식 속도와 성능을 직접 확인해봤습니다. 영상을 통해 확인해보세요!",
+          link: "https://youtube.com/shorts/CTaNVT5yl94?si=2n9wbBWtPLvjHSLY"
+        },
+        {
+          image: "https://gw.unionbiometrics.com:443/UploadResource/Editor/2026/05/15/20260515_191509171_18248.png",
+          title: "아직 건설현장에서 출석만 하세요? 스마트하고 안전한 건설 현장을 구축하는 방법👷",
+          desc: "건설 현장에서 출근 기록만으로는 교대 전후 작업자의 건강 상태를 충분히 파악하기 어렵습니다. HealthID는 건설현장에서 출근 기록을 넘어 작업자의 건강 상태를 체계적으로 확인해, 보다 안전한 건설 현장 운영을 지원합니다.",
+          link: "https://youtube.com/shorts/3YY0ABhtUQI?si=LJ7YL4bCTLL9ZAHZ"
+        }
+      ]
+    },
+    infographics: {
+      label: "인포그래픽",
+      enabled: true,
+      moreText: "더 많은 인포그래픽 알아보기",
+      moreLink: "https://unionbiometrics.com/infographic/",
+      items: [
+        {
+          image: "https://unionbiometrics.com/wp-content/uploads/2026/01/%EC%95%84%ED%8A%B8%EB%B3%B4%EB%93%9C-4-%EC%82%AC%EB%B3%B8-6@2x1-1024x432.jpg",
+          title: "2026년 개인정보보호 실효적 제재의 시대 – 정보보안의 새로운 패러다임, 생체인식 통합 인증센터",
+          desc: "AI 딥페이크와 계정 탈취가 고도화되면서, 신뢰받는 내부자처럼 보이는 접근까지 검증해야 하는 시대가 되었습니다. 이번 인포그래픽은 내부자 위협, 계정 공유, 물리·정보 보안 분리의 한계를 짚고, Zero Trust 관점에서 생체인식 기반 통합 인증센터가 왜 새로운 보안 기준이 될 수 있는지 설명합니다.",
+          link: "https://unionbiometrics.com/%EC%A0%95%EB%B3%B4%EB%B3%B4%EC%95%88-%EC%83%9D%EC%B2%B4%EC%9D%B8%EC%8B%9D-%ED%86%B5%ED%95%A9-%EC%9D%B8%EC%A6%9D%EC%84%BC%ED%84%B0/"
+        }
+      ]
+    },
+    blogs: {
+      label: "블로그",
+      enabled: false,
+      moreText: "더 많은 블로그 알아보기",
+      moreLink: "https://unionbiometrics.com/blog/",
+      items: [
+        {
+          image: "https://unionbiometrics.com/wp-content/uploads/2026/04/09-%EB%8C%80%ED%91%9C%EC%9D%B4%EB%AF%B8%EC%A7%80-1024x431.jpg",
+          title: "입구 보안만으로 충분한가: 학교 보안에 ‘제로 트러스트’가 필요하다",
+          desc: "학교 보안은 그동안 외부인의 출입을 통제하는 데 집중해왔습니다. 방문 사전예약제, 출입 명부 관리, 방문증 발급 등으로 관리 수준은 높아졌지만, 정문에서 한 번 신원을 확인하는 것만으로 학교 보안은 충분할까요?",
+          link: "https://unionbiometrics.com/%EB%B8%94%EB%A1%9C%EA%B7%B8%EC%9E%85%EA%B5%AC-%EB%B3%B4%EC%95%88%EB%A7%8C%EC%9C%BC%EB%A1%9C-%EC%B6%A9%EB%B6%84%ED%95%9C%EA%B0%80-%ED%95%99%EA%B5%90-%EB%B3%B4%EC%95%88%EC%97%90-%EC%A0%9C/"
+        }
+      ]
+    },
+    cases: {
+      label: "고객 사례",
+      enabled: false,
+      moreText: "더 많은 고객 사례 알아보기",
+      moreLink: "https://unionbiometrics.com/",
+      items: [
+        {
+          image: "",
+          title: "고객 사례 제목을 입력하세요",
+          desc: "고객사 도입 배경, 적용 솔루션, 개선 효과를 간단히 입력하세요.",
+          link: ""
+        }
+      ]
+    },
+    press: {
+      label: "보도 자료 / 기사",
+      enabled: false,
+      moreText: "더 많은 보도 자료 알아보기",
+      moreLink: "https://unionbiometrics.com/%eb%b3%b4%eb%8f%84%ec%9e%90%eb%a3%8c/",
+      items: [
+        {
+          image: "",
+          title: "유니온바이오메트릭스, G-PASS 재지정 속 해외 인프라 공략 확대",
+          desc: "유니온바이오메트릭스가 해외조달 시장 진출 유망기업(G-PASS) 재지정과 기업 역량 평가 A등급을 확보하며 글로벌 조달 경쟁력을 강화했습니다.",
+          link: "https://unionbiometrics.com/41637/"
+        },
+        {
+          image: "https://unionbiometrics.com/wp-content/uploads/2026/05/407306891_2084.jpg",
+          title: "“얼굴로 심박·건강 이상까지” 유니온바이오메트릭스, LH 건설현장에 ‘HealthID’ 공급",
+          desc: "유니온바이오메트릭스가 LH 공공주택 건설현장에 얼굴인식 기반 비접촉 건강 모니터링 솔루션 ‘HealthID’를 공급합니다.",
+          link: "https://unionbiometrics.com/%EB%B3%B4%EB%8F%84%EC%9E%90%EB%A3%8C-%EC%96%BC%EA%B5%B4%EB%A1%9C-%EC%8B%AC%EB%B0%95%C2%B7%EA%B1%B4%EA%B0%95-%EC%9D%B4%EC%83%81%EA%B9%8C%EC%A7%80-%EC%9C%A0%EB%8B%88%EC%98%A8/"
+        }
+      ]
+    }
+  };
+
+  let sectionOrder = ["videos", "infographics", "blogs", "cases", "press"];
+
+  function esc(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
+  }
+
+  function nl2br(value) {
+    return esc(value).replace(/\n/g, "<br>");
+  }
+
+  function get(id) {
+    return document.getElementById(id).value.trim();
+  }
+
+  function renderSectionEditors() {
+    const wrap = document.getElementById("sectionEditors");
+    wrap.innerHTML = "";
+
+    sectionOrder.forEach((key, sectionIndex) => {
+      const section = sections[key];
+
+      const box = document.createElement("div");
+      box.className = "section";
+      box.innerHTML = `
+        <h2>
+          <span>${esc(section.label)}</span>
+          <span class="section-title-tools">
+            <button class="ghost" type="button" onclick="moveSection('${key}', -1)">섹션↑</button>
+            <button class="ghost" type="button" onclick="moveSection('${key}', 1)">섹션↓</button>
+            <label class="toggle"><input type="checkbox" data-section="${key}" data-field="enabled" ${section.enabled ? "checked" : ""}> 노출</label>
+          </span>
+        </h2>
+
+        <label>더보기 버튼 문구</label>
+        <input data-section="${key}" data-field="moreText" value="${esc(section.moreText)}">
+
+        <label>더보기 버튼 링크</label>
+        <input data-section="${key}" data-field="moreLink" value="${esc(section.moreLink)}">
+
+        <div class="hint">각 항목의 이미지 URL은 비워두면 텍스트형 콘텐츠로 출력됩니다.</div>
+
+        <div data-items="${key}"></div>
+
+        <button class="ghost" type="button" onclick="addItem('${key}')">+ 콘텐츠 추가</button>
+      `;
+      wrap.appendChild(box);
+
+      const itemWrap = box.querySelector(`[data-items="${key}"]`);
+      section.items.forEach((item, itemIndex) => {
+        const itemBox = document.createElement("div");
+        itemBox.className = "item";
+        itemBox.innerHTML = `
+          <div class="item-head">
+            <strong>${esc(section.label)} ${itemIndex + 1}</strong>
+            <div class="item-tools">
+              <button class="ghost" type="button" onclick="moveItem('${key}', ${itemIndex}, -1)">위로</button>
+              <button class="ghost" type="button" onclick="moveItem('${key}', ${itemIndex}, 1)">아래로</button>
+              <button class="danger" type="button" onclick="removeItem('${key}', ${itemIndex})">삭제</button>
+            </div>
+          </div>
+          <label>이미지 URL</label>
+          <input data-section="${key}" data-index="${itemIndex}" data-item-field="image" value="${esc(item.image)}">
+          <label>제목</label>
+          <input data-section="${key}" data-index="${itemIndex}" data-item-field="title" value="${esc(item.title)}">
+          <label>설명</label>
+          <textarea data-section="${key}" data-index="${itemIndex}" data-item-field="desc">${esc(item.desc)}</textarea>
+          <label>링크</label>
+          <input data-section="${key}" data-index="${itemIndex}" data-item-field="link" value="${esc(item.link)}">
+        `;
+        itemWrap.appendChild(itemBox);
+      });
+    });
+
+    wrap.querySelectorAll("[data-section]").forEach((el) => {
+      el.addEventListener("input", handleEditorInput);
+      el.addEventListener("change", handleEditorInput);
+    });
+  }
+
+  function handleEditorInput(event) {
+    const el = event.target;
+    const key = el.dataset.section;
+
+    if (!key) return;
+
+    if (el.dataset.itemField) {
+      const index = Number(el.dataset.index);
+      sections[key].items[index][el.dataset.itemField] = el.value;
+    } else if (el.dataset.field === "enabled") {
+      sections[key].enabled = el.checked;
+    } else if (el.dataset.field) {
+      sections[key][el.dataset.field] = el.value;
+    }
+
+    refresh();
+  }
+
+  function moveSection(key, direction) {
+    const index = sectionOrder.indexOf(key);
+    const next = index + direction;
+    if (next < 0 || next >= sectionOrder.length) return;
+    [sectionOrder[index], sectionOrder[next]] = [sectionOrder[next], sectionOrder[index]];
+    renderSectionEditors();
+    refresh();
+  }
+
+  function addItem(key) {
+    sections[key].items.push({ image: "", title: "", desc: "", link: "" });
+    renderSectionEditors();
+    refresh();
+  }
+
+  function removeItem(key, index) {
+    sections[key].items.splice(index, 1);
+    renderSectionEditors();
+    refresh();
+  }
+
+  function moveItem(key, index, direction) {
+    const next = index + direction;
+    const items = sections[key].items;
+    if (next < 0 || next >= items.length) return;
+    [items[index], items[next]] = [items[next], items[index]];
+    renderSectionEditors();
+    refresh();
+  }
+
+  function sectionTitle(text) {
+    return `
+    <tr>
+      <td style="padding:10px 25px 0;">
+        <hr style="height:1px; background-color:#000; border:0; margin:10px 0 5px;">
+        <h2 style="font-size:18px; color:#003DA6; margin:18px 0 15px; line-height:1.5; font-family:'맑은 고딕', Arial, sans-serif;">${esc(text)}</h2>
+      </td>
+    </tr>`;
+  }
+
+  function contentItem(item) {
+    const hasImage = Boolean(item.image && item.image.trim());
+
+    if (hasImage) {
+      return `
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:20px;">
+        <tbody>
+          <tr>
+            <td width="120" valign="top" style="padding-right:15px;">
+              <a href="${esc(item.link)}" target="_blank" style="font-family:'맑은 고딕', Arial, sans-serif;">
+                <img src="${esc(item.image)}" alt="" width="160" style="display:block; width:160px; height:100px; border:0; object-fit:cover;">
+              </a>
+            </td>
+            <td valign="top" style="font-size:14px; line-height:1.5;">
+              ${itemText(item)}
+            </td>
+          </tr>
+        </tbody>
+      </table>`;
+    }
+
+    return `
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:20px;">
+        <tbody>
+          <tr>
+            <td valign="top" style="font-size:14px; line-height:1.5;">
+              ${itemText(item)}
+            </td>
+          </tr>
+        </tbody>
+      </table>`;
+  }
+
+  function itemText(item) {
+    const more = item.link
+      ? `<a href="${esc(item.link)}" style="color:#003DA6; text-decoration:none; font-weight:bold; font-family:'맑은 고딕', Arial, sans-serif; font-size:10pt;" target="_blank">...더보기</a>`
+      : `<span style="color:#9ca3af; font-weight:bold; font-family:'맑은 고딕', Arial, sans-serif; font-size:10pt;">...더보기 링크 필요</span>`;
+
+    return `
+      <p style="line-height:1.5; font-family:'Segoe UI', Arial, sans-serif; font-size:10.5pt; margin:0;">
+        <strong style="font-family:'맑은 고딕', Arial, sans-serif; font-size:12pt;">${esc(item.title)}</strong>
+      </p>
+      <p style="margin:8px 0 0; font-size:10.5pt; line-height:1.5; font-family:'맑은 고딕', Arial, sans-serif;">
+        <span style="font-family:'맑은 고딕', Arial, sans-serif; font-size:10pt;">${esc(item.desc)}&nbsp;</span>${more}
+      </p>`;
+  }
+
+  function buttonRow(text, link) {
+    if (!link) return "";
+    return `
+      <table border="0" cellspacing="0" cellpadding="0" align="center" width="100%" style="margin:20px 0;">
+        <tbody>
+          <tr>
+            <td align="center">
+              <a href="${esc(link)}" target="_blank" style="display:block; width:520px; max-width:520px; text-align:center; background:#003DA6; color:#ffffff; font-size:16px; font-weight:bold; text-decoration:none; padding:16px 0; border-radius:50px; margin:20px auto; font-family:'맑은 고딕', Arial, sans-serif;">${esc(text)}</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>`;
+  }
+
+  function buildSectionHtml(key) {
+    const section = sections[key];
+    if (!section.enabled) return "";
+
+    const validItems = section.items.filter((item) => item.title || item.desc || item.image || item.link);
+
+    if (!validItems.length) return "";
+
+    return `
+      ${sectionTitle(section.label)}
+      <tr>
+        <td style="padding:0 25px 20px;">
+          ${validItems.map(contentItem).join("")}
+          ${buttonRow(section.moreText, section.moreLink)}
+        </td>
+      </tr>`;
+  }
+
+  function validate() {
+    const warnings = [];
+
+    [
+      ["히어로 이미지", get("heroImage")],
+      ["히어로 링크", get("heroLink")],
+      ["메인 제목", get("mainTitle")],
+      ["CTA 링크", get("mainCtaLink")]
+    ].forEach(([label, value]) => {
+      if (!value) warnings.push(`${label} 누락`);
+    });
+
+    sectionOrder.forEach((key) => {
+      const section = sections[key];
+      if (!section.enabled) return;
+
+      section.items.forEach((item, index) => {
+        const hasContent = item.title || item.desc || item.image || item.link;
+        if (!hasContent) return;
+
+        if (!item.title) warnings.push(`${section.label} ${index + 1} 제목 누락`);
+        if (!item.link) warnings.push(`${section.label} ${index + 1} 더보기 링크 누락`);
+      });
+    });
+
+    const box = document.getElementById("warning");
+    if (warnings.length) {
+      box.style.display = "block";
+      box.innerHTML = "<strong>검수 필요:</strong><br>" + warnings.map(esc).join("<br>");
+    } else {
+      box.style.display = "none";
+      box.innerHTML = "";
+    }
+  }
+
+  function buildEmailHtml() {
+    const sectionHtml = sectionOrder.map(buildSectionHtml).join("");
+
+    return `<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>UNION biometrics Newsletter</title>
+</head>
+<body style="margin:0; padding:0; background:#ffffff;">
+<div style="font-family:'Segoe UI', Arial, sans-serif; font-size:10pt; line-height:1.4; margin:0; padding:0;">
+<table width="600" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff" align="center" style="margin:0 auto; border:1px solid #D4D4D4; width:600px;">
+  <tbody>
+    <tr>
+      <td style="padding:20px;">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tbody>
+            <tr>
+              <td align="left" style="padding:10px 20px;">
+                <a href="${esc(get("homeUrl"))}" target="_blank">
+                  <img src="${esc(get("logoUrl"))}" alt="Union Biometrics" height="35" style="display:block; border:0;">
+                </a>
+              </td>
+              <td>&nbsp;</td>
+              <td align="right" style="padding:10px 20px;">
+                <a href="${esc(get("homeUrl"))}" target="_blank">
+                  <img src="${esc(get("ubioLogoUrl"))}" alt="UBio" height="35" style="display:block; border:0;">
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <a href="${esc(get("heroLink"))}" target="_blank">
+          <img src="${esc(get("heroImage"))}" alt="Hero Image" width="100%" style="display:block; border:0; outline:none;">
+        </a>
+      </td>
+    </tr>
+
+    <tr>
+      <td style="padding:30px 25px; line-height:1.6;">
+        <h1 style="margin:0 0 10px; line-height:1.35; font-family:'맑은 고딕', Arial, sans-serif; color:#1A1A1A; font-size:12pt;">| ${esc(get("mainTitle"))}</h1>
+        <p style="font-size:12pt; margin:20px 0 15px; line-height:1.5; font-family:'맑은 고딕', Arial, sans-serif; color:#333333;">${nl2br(get("mainBody"))}</p>
+        ${buttonRow(get("mainCtaText"), get("mainCtaLink"))}
+      </td>
+    </tr>
+
+    ${sectionHtml}
+
+    <tr>
+      <td bgcolor="#003DA6" align="center" style="padding:30px 15px; color:#ffffff; font-size:13px;">
+        <table border="0" cellspacing="0" cellpadding="0" align="center">
+          <tbody>
+            <tr>
+              <td align="center" style="padding:0 12px;">
+                <a href="${esc(get("homeUrl"))}" target="_blank" style="display:inline-block; text-decoration:none; color:#ffffff; font-size:12px; font-weight:bold; font-family:'맑은 고딕';">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" aria-hidden="true" style="display:block; margin:0 auto;">
+                    <circle cx="12" cy="12" r="12" fill="#fff"></circle>
+                    <path d="M12 5l7 6h-2v7H7v-7H5l7-6z" fill="#003DA6"></path>
+                  </svg>
+                  <span style="display:block; margin-top:5px; color:#ffffff; font-size:12px; font-weight:bold; font-family:'맑은 고딕';">Home</span>
+                </a>
+              </td>
+
+              <td align="center" style="padding:0 12px;">
+                <a href="${esc(get("facebookUrl"))}" target="_blank" style="display:inline-block; text-decoration:none; color:#ffffff; font-size:12px; font-weight:bold; font-family:'맑은 고딕';">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" aria-hidden="true" style="display:block; margin:0 auto;">
+                    <circle cx="12" cy="12" r="12" fill="#fff"></circle>
+                    <path d="M13 10h2.5l-.3 2H13v7h-3v-7H9v-2h1V9c0-1.7.8-3 3.2-3H16v2h-2c-.6 0-1 .4-1 1v1z" fill="#003DA6"></path>
+                  </svg>
+                  <span style="display:block; margin-top:5px; color:#ffffff; font-size:12px; font-weight:bold; font-family:'맑은 고딕';">Facebook</span>
+                </a>
+              </td>
+
+              <td align="center" style="padding:0 12px;">
+                <a href="${esc(get("linkedinUrl"))}" target="_blank" style="display:inline-block; text-decoration:none; color:#ffffff; font-size:12px; font-weight:bold; font-family:'맑은 고딕';">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" aria-hidden="true" style="display:block; margin:0 auto;">
+                    <circle cx="12" cy="12" r="12" fill="#fff"></circle>
+                    <path d="M6.94 9H9.7v9H6.94V9zM8.32 6.5c.88 0 1.44.58 1.44 1.34 0 .75-.55 1.33-1.41 1.33h-.02c-.87 0-1.43-.58-1.43-1.33 0-.76.56-1.34 1.42-1.34zM10.92 9h2.64v1.23h.04c.37-.66 1.26-1.35 2.6-1.35 2.78 0 3.3 1.82 3.3 4.2V18h-2.75v-4.07 c0-.97-.02-2.22-1.35-2.22-1.35 0-1.56 1.05-1.56 2.15V18h-2.75V9z" fill="#003DA6"></path>
+                  </svg>
+                  <span style="display:block; margin-top:5px; color:#ffffff; font-size:12px; font-weight:bold; font-family:'맑은 고딕';">LinkedIn</span>
+                </a>
+              </td>
+
+              <td align="center" style="padding:0 12px;">
+                <a href="${esc(get("youtubeUrl"))}" target="_blank" style="display:inline-block; text-decoration:none; color:#ffffff; font-size:12px; font-weight:bold; font-family:'맑은 고딕';">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" aria-hidden="true" style="display:block; margin:0 auto;">
+                    <circle cx="12" cy="12" r="12" fill="#fff"></circle>
+                    <polygon points="10,8 16,12 10,16" fill="#003DA6"></polygon>
+                  </svg>
+                  <span style="display:block; margin-top:5px; color:#ffffff; font-size:12px; font-weight:bold; font-family:'맑은 고딕';">YouTube</span>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <br><br>
+        <img src="${esc(get("footerLogoUrl"))}" alt="UNION biometrics" style="width:113px; height:50px; border:0;"><br><br>
+        <p style="margin:10px 0 0; font-family:Arial, sans-serif; font-size:9.8pt; line-height:1.5;">Contact us: +82-2-6488-3041&nbsp;| sales@unionbiometrics.com</p>
+        <hr style="width:50%; height:1px; background-color:#fff; border:0; margin:15px auto;">
+        <p style="margin:5px 0; font-family:Arial, sans-serif; font-size:9.8pt; line-height:1.5;">© 2025 UNION biometrics. All rights reserved.</p>
+        <p style="margin:5px 0; font-family:Arial, sans-serif; font-size:9.8pt; line-height:1.5;">You are receiving this email as a UNION biometrics partner or subscriber to product updates.</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</body>
+</html>`;
+  }
+
+  function refresh() {
+    validate();
+    const html = buildEmailHtml();
+    document.getElementById("outputHtml").value = html;
+    document.getElementById("previewFrame").srcdoc = html;
+
+    const status = document.getElementById("status");
+    status.textContent = "미리보기와 HTML 코드가 갱신되었습니다.";
+    setTimeout(() => status.textContent = "", 1800);
+  }
+
+  async function copyHtml() {
+    const html = document.getElementById("outputHtml").value || buildEmailHtml();
+    try {
+      await navigator.clipboard.writeText(html);
+      document.getElementById("status").textContent = "HTML 코드가 복사되었습니다.";
+    } catch (e) {
+      document.getElementById("outputHtml").select();
+      document.execCommand("copy");
+      document.getElementById("status").textContent = "HTML 코드가 선택/복사되었습니다.";
+    }
+  }
+
+  function downloadFile(type) {
+    const html = document.getElementById("outputHtml").value || buildEmailHtml();
+    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const date = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `union-newsletter-${date}.${type === "txt" ? "txt" : "html"}`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  document.querySelectorAll("input, textarea").forEach((el) => {
+    el.addEventListener("input", refresh);
+    el.addEventListener("change", refresh);
+  });
+
+  renderSectionEditors();
+  refresh();
+</script>
+</body>
+</html>
