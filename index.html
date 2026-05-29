@@ -2489,10 +2489,6 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(savedMap));
   }
 
-  function collectBuilderState() {
-    const mainFields = {};
-
-  
   function initGlassInteractions() {
     if (window.__glassInteractionsReady) return;
     window.__glassInteractionsReady = true;
@@ -2538,7 +2534,10 @@
     });
   }
 
-  document.querySelectorAll("[data-main]").forEach((el) => {
+  function collectBuilderState() {
+    const mainFields = {};
+
+    document.querySelectorAll("[data-main]").forEach((el) => {
       mainFields[el.id] = el.value;
     });
 
@@ -2650,7 +2649,7 @@
 
       ["ko", "en"].forEach((lang) => {
         const state = entry[lang];
-        if (!state) return;
+        if (!state || typeof state !== "object") return;
 
         const savedAtValue = state.savedAt || `${dateKey}T00:00:00`;
         const savedAtTime = new Date(savedAtValue).getTime();
@@ -3638,10 +3637,25 @@
   initGlassInteractions();
   updateLanguageButtons();
 
-  if (!autoLoadLatestSavedNewsletter()) {
+  try {
+    const hasAutoLoaded = autoLoadLatestSavedNewsletter();
+
+    if (!hasAutoLoaded) {
+      renderSocialEditors();
+      enforceDefaultEditorPanelState();
+      refresh(false);
+    }
+  } catch (error) {
+    console.error("Auto-load failed. Rendering default builder.", error);
+
     renderSocialEditors();
     enforceDefaultEditorPanelState();
     refresh(false);
+
+    const status = document.getElementById("status");
+    if (status) {
+      status.textContent = "저장본 자동 로드에 실패해 기본 템플릿으로 열었습니다.";
+    }
   }
 </script>
 </body>
