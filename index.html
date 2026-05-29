@@ -137,6 +137,34 @@
     line-height: 1.55;
   }
 
+
+  .language-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin: 0 0 14px;
+    padding: 5px;
+    border: 1px solid #D7DEE8;
+    border-radius: 999px;
+    background: #EEF4FA;
+  }
+
+  .language-switch button {
+    padding: 9px 10px;
+    border-radius: 999px;
+    background: transparent;
+    color: #64748B;
+    box-shadow: none;
+    font-size: 13px;
+  }
+
+  .language-switch button.active {
+    background: #FFFFFF;
+    color: var(--brand);
+    border: 1px solid #CFE1F8;
+    box-shadow: 0 6px 14px rgba(10, 123, 239, 0.12);
+  }
+
   .quick-tools {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -805,6 +833,11 @@
       생성된 HTML은 그룹웨어/메일 에디터에 붙여넣어 사용하세요.
     </p>
 
+    <div class="language-switch" aria-label="뉴스레터 언어 선택">
+      <button id="langKoBtn" class="active" type="button" onclick="applyLanguagePreset('ko')">국문</button>
+      <button id="langEnBtn" type="button" onclick="applyLanguagePreset('en')">English</button>
+    </div>
+
     <div class="quick-tools">
       <input id="newCategoryName" placeholder="새 카테고리명 예: 백서, 고객 사례, 기사">
       <button class="primary" type="button" onclick="addCategoryFromInput()">카테고리 추가</button>
@@ -829,6 +862,20 @@
         <input id="homeUrl" data-main value="https://unionbiometrics.com/">
         <label>푸터 흰색 로고 URL</label>
         <input id="footerLogoUrl" data-main value="https://unionbiometrics.com/wp-content/uploads/2025/10/유니온바이오메트릭스-로고-흰색.png">
+
+        <div class="row">
+          <div>
+            <label>Contact 번호</label>
+            <input id="footerContactPhone" data-main value="+82-2-6488-3041">
+          </div>
+          <div>
+            <label>Contact 이메일</label>
+            <input id="footerContactEmail" data-main value="sales@unionbiometrics.com">
+          </div>
+        </div>
+
+        <label>콘텐츠 더보기 문구</label>
+        <input id="readMoreText" data-main value="...더보기">
 
         <div class="section" style="margin-top:14px;">
           <div class="section-header">
@@ -948,6 +995,240 @@
   let calendarDate = new Date();
   let loadedSavedDate = "";
 
+  let currentLanguage = "ko";
+
+  function createKoreanTemplate() {
+    return {
+      mainFields: {
+        homeUrl: "https://unionbiometrics.com/",
+        footerContactPhone: "+82-2-6488-3041",
+        footerContactEmail: "sales@unionbiometrics.com",
+        readMoreText: "...더보기",
+        heroImage: "https://gw.unionbiometrics.com:443/UploadResource/Editor/2026/05/29/20260529_104153522_50416.png",
+        heroLink: "https://unionbiometrics.com/%EB%B3%B4%EC%95%88-%EB%B0%B1%EC%84%9C-ai-%EA%B8%B0%EB%B0%98-%EC%82%AC%EC%9D%B4%EB%B2%84-%EC%9C%84%ED%98%91%EC%97%90-%EB%8C%80%EC%9D%91%ED%95%98%EB%8A%94-%EC%B0%A8%EC%84%B8%EB%8C%80-%EC%9D%B8/",
+        mainTitle: "기존 인증 체계를 보완하는 생체인증 기반 MFA 전략",
+        mainBody: "AI가 업무 속도를 높인 만큼, 공격자의 침투 속도도 빨라지고 있습니다.\n이제 해커는 AI를 활용해 취약한 계정과 시스템을 더 빠르게 찾아내고, 반복적인 공격을 자동화할 수 있습니다.\n\n문제는 하나의 계정이 탈취되는 순간입니다. 공격자는 정상 사용자처럼 내부 시스템에 접근하고, 권한을 상승시키며, 중요 데이터를 탈취할 수 있습니다. 이제 기업 보안은 네트워크 경계 방어를 넘어, 실제 사용자를 검증하는 인증 중심 구조로 전환해야 합니다.\n\n이번 백서에서는 비밀번호와 기존 MFA의 한계를 짚고, 생체인증 기반 MFA가 AI 시대의 계정 기반 공격에 대응하는 핵심 전략이 될 수 있는 이유를 설명합니다.",
+        mainCtaText: "보안 백서 원문 보러가기",
+        mainCtaLink: "https://unionbiometrics.com/%EB%B3%B4%EC%95%88-%EB%B0%B1%EC%84%9C-ai-%EA%B8%B0%EB%B0%98-%EC%82%AC%EC%9D%B4%EB%B2%84-%EC%9C%84%ED%98%91%EC%97%90-%EB%8C%80%EC%9D%91%ED%95%98%EB%8A%94-%EC%B0%A8%EC%84%B8%EB%8C%80-%EC%9D%B8/"
+      },
+      socials: [
+        { label: "Home", type: "home", url: "https://unionbiometrics.com/" },
+        { label: "Facebook", type: "facebook", url: "https://www.facebook.com/unionbiometrics" },
+        { label: "LinkedIn", type: "linkedin", url: "https://www.linkedin.com/company/unionbiometrics" },
+        { label: "YouTube", type: "youtube", url: "https://www.youtube.com/@unionbiometrics" }
+      ],
+      sections: [
+        {
+          id: makeId(),
+          label: "비디오",
+          enabled: true,
+          collapsed: false,
+          moreText: "더 많은 비디오 알아보기",
+          moreLink: "https://www.youtube.com/@UNIONbiometricsKR",
+          items: [
+            {
+              image: "https://gw.unionbiometrics.com:443/UploadResource/Editor/2026/05/29/20260529_112527978_09774.png",
+              title: "10초동안 과연 몇 명이 지나갈 수 있을까요?",
+              desc: "얼굴인식 단말기 UBio-X Face Premium은 10초 동안 몇 명까지 얼굴을 인식할 수 있을까요? 실제 테스트를 통해 인식 속도와 성능을 직접 확인해봤습니다. 영상을 통해 확인해보세요!",
+              link: "https://youtube.com/shorts/CTaNVT5yl94?si=2n9wbBWtPLvjHSLY"
+            },
+            {
+              image: "https://gw.unionbiometrics.com:443/UploadResource/Editor/2026/05/15/20260515_191509171_18248.png",
+              title: "아직 건설현장에서 출석만 하세요? 스마트하고 안전한 건설 현장을 구축하는 방법👷",
+              desc: "건설 현장에서 출근 기록만으로는 교대 전후 작업자의 건강 상태를 충분히 파악하기 어렵습니다. HealthID는 건설현장에서 출근 기록을 넘어 작업자의 건강 상태를 체계적으로 확인해, 보다 안전한 건설 현장 운영을 지원합니다.",
+              link: "https://youtube.com/shorts/3YY0ABhtUQI?si=LJ7YL4bCTLL9ZAHZ"
+            }
+          ]
+        },
+        {
+          id: makeId(),
+          label: "인포그래픽",
+          enabled: true,
+          collapsed: true,
+          moreText: "더 많은 인포그래픽 알아보기",
+          moreLink: "https://unionbiometrics.com/infographic/",
+          items: [
+            {
+              image: "https://unionbiometrics.com/wp-content/uploads/2026/01/%EC%95%84%ED%8A%B8%EB%B3%B4%EB%93%9C-4-%EC%82%AC%EB%B3%B8-6@2x1-1024x432.jpg",
+              title: "2026년 개인정보보호 실효적 제재의 시대 – 정보보안의 새로운 패러다임, 생체인식 통합 인증센터",
+              desc: "AI 딥페이크와 계정 탈취가 고도화되면서, 신뢰받는 내부자처럼 보이는 접근까지 검증해야 하는 시대가 되었습니다. 이번 인포그래픽은 내부자 위협, 계정 공유, 물리·정보 보안 분리의 한계를 짚고, Zero Trust 관점에서 생체인식 기반 통합 인증센터가 왜 새로운 보안 기준이 될 수 있는지 설명합니다.",
+              link: "https://unionbiometrics.com/%EC%A0%95%EB%B3%B4%EB%B3%B4%EC%95%88-%EC%83%9D%EC%B2%B4%EC%9D%B8%EC%8B%9D-%ED%86%B5%ED%95%A9-%EC%9D%B8%EC%A6%9D%EC%84%BC%ED%84%B0/"
+            }
+          ]
+        },
+        {
+          id: makeId(),
+          label: "블로그",
+          enabled: false,
+          collapsed: true,
+          moreText: "더 많은 블로그 알아보기",
+          moreLink: "https://unionbiometrics.com/blog/",
+          items: [
+            {
+              image: "https://unionbiometrics.com/wp-content/uploads/2026/04/09-%EB%8C%80%ED%91%9C%EC%9D%B4%EB%AF%B8%EC%A7%80-1024x431.jpg",
+              title: "입구 보안만으로 충분한가: 학교 보안에 ‘제로 트러스트’가 필요하다",
+              desc: "학교 보안은 그동안 외부인의 출입을 통제하는 데 집중해왔습니다. 방문 사전예약제, 출입 명부 관리, 방문증 발급 등으로 관리 수준은 높아졌지만, 정문에서 한 번 신원을 확인하는 것만으로 학교 보안은 충분할까요?",
+              link: "https://unionbiometrics.com/%EB%B8%94%EB%A1%9C%EA%B7%B8%EC%9E%85%EA%B5%AC-%EB%B3%B4%EC%95%88%EB%A7%8C%EC%9C%BC%EB%A1%9C-%EC%B6%A9%EB%B6%84%ED%95%9C%EA%B0%80-%ED%95%99%EA%B5%90-%EB%B3%B4%EC%95%88%EC%97%90-%EC%A0%9C/"
+            }
+          ]
+        },
+        {
+          id: makeId(),
+          label: "고객 사례",
+          enabled: false,
+          collapsed: true,
+          moreText: "더 많은 고객 사례 알아보기",
+          moreLink: "https://unionbiometrics.com/",
+          items: [
+            { image: "", title: "고객 사례 제목을 입력하세요", desc: "고객사 도입 배경, 적용 솔루션, 개선 효과를 간단히 입력하세요.", link: "" }
+          ]
+        },
+        {
+          id: makeId(),
+          label: "보도 자료 / 기사",
+          enabled: false,
+          collapsed: true,
+          moreText: "더 많은 보도 자료 알아보기",
+          moreLink: "https://unionbiometrics.com/%eb%b3%b4%eb%8f%84%ec%9e%90%eb%a3%8c/",
+          items: [
+            {
+              image: "",
+              title: "유니온바이오메트릭스, G-PASS 재지정 속 해외 인프라 공략 확대",
+              desc: "유니온바이오메트릭스가 해외조달 시장 진출 유망기업(G-PASS) 재지정과 기업 역량 평가 A등급을 확보하며 글로벌 조달 경쟁력을 강화했습니다.",
+              link: "https://unionbiometrics.com/41637/"
+            }
+          ]
+        }
+      ]
+    };
+  }
+
+  function createEnglishTemplate() {
+    return {
+      mainFields: {
+        homeUrl: "https://unionbiometrics.com/en/",
+        footerContactPhone: "+82-2-6488-3207",
+        footerContactEmail: "salesinquiry@unionbiometrics.com",
+        readMoreText: "...Read more",
+        heroImage: "https://gw.unionbiometrics.com:443/UploadResource/Editor/2026/04/21/20260421_135416498_64713.png",
+        heroLink: "https://unionbiometrics.com/en/blogwhy-ppg-liveness-detection-matters-against-spoof-fingerprints/",
+        mainTitle: "Dear Valued Partners,",
+        mainBody: "Fingerprint authentication remains one of the most widely used biometric security methods. But as spoof fingerprint attacks become more sophisticated, pattern matching alone is no longer enough. Organizations now need to verify whether the fingerprint presented on the sensor actually comes from a real, living person.\n\nIn this blog, we explore the limits of traditional fingerprint authentication and why PAD and liveness detection are becoming increasingly important in modern biometric security. As presentation attacks continue to evolve, verifying liveness is becoming a critical layer of trust.\n\nWe also look at how PPG-based verification helps strengthen authentication by detecting physiological signals that fake fingerprints cannot replicate, and how UBio-X LiveGuard applies this approach in real-world security environments.",
+        mainCtaText: "Learn More in the Full Blog",
+        mainCtaLink: "https://unionbiometrics.com/en/blogwhy-ppg-liveness-detection-matters-against-spoof-fingerprints/"
+      },
+      socials: [
+        { label: "Home", type: "home", url: "https://unionbiometrics.com/en/" },
+        { label: "Support Hub", type: "support", url: "https://support.unionbiometrics.com/" },
+        { label: "Facebook", type: "facebook", url: "https://www.facebook.com/unionbiometrics" },
+        { label: "LinkedIn", type: "linkedin", url: "https://www.linkedin.com/company/unionbiometrics" },
+        { label: "YouTube", type: "youtube", url: "https://www.youtube.com/@unionbiometrics" }
+      ],
+      sections: [
+        {
+          id: makeId(),
+          label: "Blog",
+          enabled: true,
+          collapsed: false,
+          moreText: "Read More on the Blog",
+          moreLink: "https://unionbiometrics.com/en/blog/",
+          items: [
+            {
+              image: "https://gw.unionbiometrics.com:443/UploadResource/Editor/2026/04/21/20260421_135929536_48808.png",
+              title: "From Sci-Fi to Reality: UNION biometrics’ Anti-Spoofing Technology",
+              desc: "As spoofing attacks become a real-world threat, how is anti-spoofing technology that detects and verifies liveness evolving today?",
+              link: "https://unionbiometrics.com/en/blog-from-sci-fi-to-reality-union-biometrics-anti-spoofing-technology/"
+            }
+          ]
+        },
+        {
+          id: makeId(),
+          label: "Short Video",
+          enabled: true,
+          collapsed: false,
+          moreText: "Watch on YouTube",
+          moreLink: "https://www.youtube.com/@unionbiometrics/shorts",
+          items: [
+            {
+              image: "https://gw.unionbiometrics.com:443/UploadResource/Editor/2026/04/21/20260421_140008293_30539.png",
+              title: "Can Fingerprint Scanners Be Tricked?",
+              desc: "Fingerprint recognition is more than pattern matching. See how UBio-X LiveGuard uses PPG-based liveness detection to measure blood flow and verify a living finger.",
+              link: "https://youtube.com/shorts/i_TJejXEwO8?si=hXUtCTu8Ff5x3DDI"
+            }
+          ]
+        },
+        {
+          id: makeId(),
+          label: "News Room",
+          enabled: true,
+          collapsed: true,
+          moreText: "Read More in the News Room",
+          moreLink: "https://unionbiometrics.com/en/press-releases/",
+          items: [
+            {
+              image: "https://gw.unionbiometrics.com:443/UploadResource/Editor/2026/04/21/20260421_140041457_36153.png",
+              title: "“Biometrics pops up in AI hacks”… Authentication system reorganization is required",
+              desc: "As AI-driven attacks grow faster and more scalable, enterprises are rethinking password-based security and turning to biometrics and phishing-resistant authentication.",
+              link: "https://unionbiometrics.com/en/press-release-biometrics-pops-up-in-ai-hacks-antropic-mythos-shock-requires-authentication-system-reorganization-wormwood/"
+            },
+            {
+              image: "https://gw.unionbiometrics.com:443/UploadResource/Editor/2026/04/21/20260421_140109279_41317.png",
+              title: "UGC 2026 with Partners from 35 Countries ... Global Expansion Begins",
+              desc: "At UGC 2026, UNION biometrics introduced Alpeta X and its integrated authentication center strategy to partners from 35 countries, signaling broader global expansion.",
+              link: "https://unionbiometrics.com/en/press-release-union-biometrics-to-host-ugc-2026-with-partners-from-35-countries-global-expansion-begins/"
+            }
+          ]
+        }
+      ]
+    };
+  }
+
+  function getLanguageTemplate(language) {
+    return language === "en" ? createEnglishTemplate() : createKoreanTemplate();
+  }
+
+  function setMainFields(fields) {
+    Object.entries(fields).forEach(([id, value]) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.value = value;
+      }
+    });
+  }
+
+  function updateLanguageButtons() {
+    const koBtn = document.getElementById("langKoBtn");
+    const enBtn = document.getElementById("langEnBtn");
+
+    if (koBtn) koBtn.classList.toggle("active", currentLanguage === "ko");
+    if (enBtn) enBtn.classList.toggle("active", currentLanguage === "en");
+  }
+
+  function applyLanguagePreset(language) {
+    if (language === currentLanguage) {
+      updateLanguageButtons();
+      return;
+    }
+
+    const label = language === "en" ? "영문" : "국문";
+    const ok = confirm(`${label} 뉴스레터 기본값으로 전환할까요? 현재 입력 중인 내용은 저장하지 않으면 사라질 수 있습니다.`);
+    if (!ok) return;
+
+    const template = getLanguageTemplate(language);
+
+    currentLanguage = language;
+    setMainFields(template.mainFields);
+    socials = JSON.parse(JSON.stringify(template.socials));
+    sections = JSON.parse(JSON.stringify(template.sections));
+
+    renderSocialEditors();
+    renderSectionEditors();
+    updateLanguageButtons();
+    refresh(false);
+    showToast(`${label} 템플릿으로 전환되었습니다.`);
+  }
+
+
   function toggleBuilderPanel() {
     const app = document.querySelector(".app");
     const button = document.querySelector(".sidebar-write-btn");
@@ -1020,6 +1301,7 @@
     });
 
     return {
+      currentLanguage,
       mainFields,
       socials: JSON.parse(JSON.stringify(socials)),
       sections: JSON.parse(JSON.stringify(sections)),
@@ -1029,6 +1311,9 @@
 
   function applyBuilderState(state) {
     if (!state) return;
+
+    currentLanguage = state.currentLanguage || "ko";
+    updateLanguageButtons();
 
     if (state.mainFields) {
       Object.entries(state.mainFields).forEach(([id, value]) => {
@@ -1378,6 +1663,7 @@
               <option value="facebook" ${social.type === "facebook" ? "selected" : ""}>Facebook</option>
               <option value="linkedin" ${social.type === "linkedin" ? "selected" : ""}>LinkedIn</option>
               <option value="youtube" ${social.type === "youtube" ? "selected" : ""}>YouTube</option>
+              <option value="support" ${social.type === "support" ? "selected" : ""}>Support Hub</option>
               <option value="link" ${social.type === "link" ? "selected" : ""}>기본 링크</option>
             </select>
           </div>
@@ -1638,9 +1924,10 @@
   }
 
   function itemText(item) {
+    const readMoreText = get("readMoreText") || "...더보기";
     const more = item.link
-      ? `<a href="${esc(item.link)}" style="color:#003DA6; text-decoration:none; font-weight:bold; font-family:'맑은 고딕', Arial, sans-serif; font-size:10pt;" target="_blank">...더보기</a>`
-      : `<span style="color:#9ca3af; font-weight:bold; font-family:'맑은 고딕', Arial, sans-serif; font-size:10pt;">...더보기 링크 필요</span>`;
+      ? `<a href="${esc(item.link)}" style="color:#003DA6; text-decoration:none; font-weight:bold; font-family:'맑은 고딕', Arial, sans-serif; font-size:10pt;" target="_blank">${esc(readMoreText)}</a>`
+      : `<span style="color:#9ca3af; font-weight:bold; font-family:'맑은 고딕', Arial, sans-serif; font-size:10pt;">${esc(readMoreText)} 링크 필요</span>`;
 
     return `
       <p style="line-height:1.5; font-family:'Segoe UI', Arial, sans-serif; font-size:10.5pt; margin:0;">
@@ -1730,6 +2017,10 @@
 
     if (type === "youtube") {
       return `<svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" aria-hidden="true" style="display:block; margin:0 auto;"><circle cx="12" cy="12" r="12" fill="#fff"></circle><polygon points="10,8 16,12 10,16" fill="#003DA6"></polygon></svg>`;
+    }
+
+    if (type === "support") {
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" aria-hidden="true" style="display:block; margin:0 auto;"><circle cx="12" cy="12" r="12" fill="#fff"></circle><path d="M8 5h5l3 3v11H8V5z" fill="#003DA6"></path><path d="M13 5v3h3" fill="#fff"></path><line x1="9" y1="11" x2="15" y2="11" stroke="#fff" stroke-width="1.2"></line><line x1="9" y1="14" x2="15" y2="14" stroke="#fff" stroke-width="1.2"></line></svg>`;
     }
 
     return `<svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" aria-hidden="true" style="display:block; margin:0 auto;"><circle cx="12" cy="12" r="12" fill="#fff"></circle><path d="M8.8 12.9l-1.1-1.1c-1.2-1.2-1.2-3.1 0-4.2 1.2-1.2 3.1-1.2 4.2 0l.8.8-1.4 1.4-.8-.8c-.4-.4-1.1-.4-1.5 0s-.4 1.1 0 1.5l1.1 1.1-1.3 1.3zm2.4 2.7l-.8-.8 1.4-1.4.8.8c.4.4 1.1.4 1.5 0s.4-1.1 0-1.5L13 11.6l1.4-1.4 1.1 1.1c1.2 1.2 1.2 3.1 0 4.2-1.2 1.3-3.1 1.3-4.3.1zm-1.5-2.2l3.7-3.7 1.4 1.4-3.7 3.7-1.4-1.4z" fill="#003DA6"></path></svg>`;
@@ -1854,7 +2145,7 @@
         ${buildSocialFooter()}
         <br><br>
         <img src="${esc(get("footerLogoUrl"))}" alt="UNION biometrics" style="width:113px; height:50px; border:0;"><br><br>
-        <p style="margin:10px 0 0; font-family:Arial, sans-serif; font-size:9.8pt; line-height:1.5;">Contact us: +82-2-6488-3041&nbsp;| sales@unionbiometrics.com</p>
+        <p style="margin:10px 0 0; font-family:Arial, sans-serif; font-size:9.8pt; line-height:1.5;">Contact us: ${esc(get("footerContactPhone"))}&nbsp;| ${esc(get("footerContactEmail"))}</p>
         <hr style="width:50%; height:1px; background-color:#fff; border:0; margin:15px auto;">
         <p style="margin:5px 0; font-family:Arial, sans-serif; font-size:9.8pt; line-height:1.5;">© 2025 UNION biometrics. All rights reserved.</p>
         <p style="margin:5px 0; font-family:Arial, sans-serif; font-size:9.8pt; line-height:1.5;">You are receiving this email as a UNION biometrics partner or subscriber to product updates.</p>
@@ -1926,6 +2217,7 @@
     }
   });
 
+  updateLanguageButtons();
   renderSocialEditors();
   renderSectionEditors();
   refresh(false);
