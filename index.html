@@ -1834,6 +1834,173 @@
     }
   }
 
+
+  /* Final collapse / expand interaction tuning */
+  .app {
+    transition: grid-template-columns 0.42s cubic-bezier(.22,.61,.36,1) !important;
+    will-change: grid-template-columns;
+  }
+
+  .panel {
+    display: block !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+    transition:
+      opacity 0.30s ease,
+      transform 0.42s cubic-bezier(.22,.61,.36,1),
+      padding 0.42s cubic-bezier(.22,.61,.36,1),
+      border-color 0.30s ease,
+      box-shadow 0.30s ease !important;
+    will-change: opacity, transform;
+  }
+
+  .preview {
+    transition:
+      padding 0.42s cubic-bezier(.22,.61,.36,1),
+      background 0.30s ease !important;
+  }
+
+  .preview-card,
+  .output {
+    transition:
+      opacity 0.28s ease,
+      transform 0.42s cubic-bezier(.22,.61,.36,1),
+      width 0.42s cubic-bezier(.22,.61,.36,1),
+      max-width 0.42s cubic-bezier(.22,.61,.36,1),
+      box-shadow 0.22s ease !important;
+  }
+
+  .app.builder-collapsed {
+    grid-template-columns: 0 minmax(0, 1fr) !important;
+  }
+
+  .app.builder-collapsed .panel {
+    opacity: 0 !important;
+    transform: translateX(-26px) !important;
+    pointer-events: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-right-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .app.builder-collapsed .preview {
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding-left: clamp(28px, 6vw, 92px) !important;
+    padding-right: clamp(28px, 6vw, 92px) !important;
+  }
+
+  .app.builder-collapsed .preview-card {
+    width: min(860px, 100%) !important;
+    max-width: 860px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    transform: translateY(0) scale(1) !important;
+  }
+
+  .app.builder-collapsed .output {
+    opacity: 0 !important;
+    transform: translateY(12px) scale(0.985) !important;
+    max-height: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    border-color: transparent !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+  }
+
+  .app.builder-collapsed .preview-card::before {
+    content: "Preview Only";
+  }
+
+  .app.builder-collapsed .sidebar-write-btn svg {
+    transform: rotate(180deg);
+  }
+
+  .section-body,
+  .modal-card,
+  .calendar-grid,
+  .saved-list {
+    transition:
+      opacity 0.24s ease,
+      transform 0.30s cubic-bezier(.22,.61,.36,1),
+      max-height 0.34s cubic-bezier(.22,.61,.36,1) !important;
+  }
+
+  .section:not(.collapsed) .section-body {
+    animation: sectionOpen 0.28s cubic-bezier(.22,.61,.36,1);
+  }
+
+  .section.collapsed .section-header {
+    transition: border-radius 0.28s ease, border-bottom-color 0.20s ease !important;
+  }
+
+  @keyframes sectionOpen {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .modal-backdrop.open .modal-card {
+    animation: modalSlideUp 0.28s cubic-bezier(.22,.61,.36,1) both;
+  }
+
+  @keyframes modalSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .calendar-floating-btn,
+  .sidebar-write-btn {
+    transition:
+      transform 0.22s cubic-bezier(.22,.61,.36,1),
+      background 0.22s ease,
+      box-shadow 0.22s ease !important;
+  }
+
+  .toast-message.show {
+    animation: toastPop 0.24s cubic-bezier(.22,.61,.36,1) both;
+  }
+
+  @keyframes toastPop {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(14px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+  }
+
+  @media (max-width: 980px) {
+    .app,
+    .app.builder-collapsed {
+      grid-template-columns: 1fr !important;
+    }
+
+    .app.builder-collapsed .panel {
+      display: none !important;
+    }
+
+    .app.builder-collapsed .output {
+      display: none !important;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -2257,11 +2424,21 @@
 
     app.classList.toggle("builder-collapsed");
 
+    const isCollapsed = app.classList.contains("builder-collapsed");
+
     if (button) {
-      button.classList.toggle("is-collapsed", app.classList.contains("builder-collapsed"));
-      button.title = app.classList.contains("builder-collapsed")
+      button.classList.toggle("is-collapsed", isCollapsed);
+      button.title = isCollapsed
         ? "빌더 패널 펼치기"
         : "빌더 패널 접기";
+      button.setAttribute("aria-label", button.title);
+    }
+
+    if (isCollapsed) {
+      const preview = document.querySelector(".preview");
+      if (preview) {
+        preview.scrollTo({ top: 0, behavior: "smooth" });
+      }
     }
   }
 
