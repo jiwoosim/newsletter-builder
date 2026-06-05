@@ -4995,11 +4995,47 @@
     setLocalSavedMap(savedMap || {});
   }
 
-  function callSheetsApi(action, data = {}) {
+  async function callSheetsApi(action, data = {}) {
     if (!GOOGLE_SHEETS_API_URL) {
-      return Promise.reject(new Error("GOOGLE_SHEETS_API_URL is empty."));
+      throw new Error("GOOGLE_SHEETS_API_URL is empty.");
     }
 
+    const normalizeData = data || {};
+
+    /*
+      저장(save)은 POST + no-cors로 전송합니다.
+      뉴스레터 본문/이미지/카테고리 데이터가 길어지면 GET/JSONP URL 길이 제한에 걸려 실패하기 때문입니다.
+      no-cors 응답은 브라우저에서 본문을 읽을 수 없지만, Apps Script doPost(e)는 정상 실행됩니다.
+    */
+    if (action === "save") {
+      try {
+        await fetch(GOOGLE_SHEETS_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify({
+            action,
+            ...normalizeData
+          })
+        });
+
+        return {
+          ok: true,
+          mode: "post-no-cors",
+          action
+        };
+      } catch (error) {
+        throw new Error(error && error.message ? error.message : String(error));
+      }
+    }
+
+    /*
+      list/get/delete는 데이터가 짧기 때문에 JSONP(GET script)로 호출합니다.
+      GitHub Pages와 Apps Script 사이의 CORS 제한을 피하기 위한 구조입니다.
+    */
     return new Promise((resolve, reject) => {
       const callbackName = `newsletterApiCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
       const script = document.createElement("script");
@@ -5020,13 +5056,23 @@
           reject(new Error(response.error || "Google Sheets API error."));
           return;
         }
-        resolve(response);
+        resolve(response || { ok: true });
       };
 
       const params = new URLSearchParams();
       params.set("action", action);
       params.set("callback", callbackName);
-      params.set("payload", JSON.stringify(data || {}));
+
+      Object.keys(normalizeData).forEach((key) => {
+        const value = normalizeData[key];
+        if (value === undefined || value === null) return;
+
+        if (typeof value === "object") {
+          params.set(key, JSON.stringify(value));
+        } else {
+          params.set(key, String(value));
+        }
+      });
 
       script.onerror = () => {
         cleanup();
