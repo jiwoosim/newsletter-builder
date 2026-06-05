@@ -4610,8 +4610,8 @@
           <div class="guide-note">
             <ul class="guide-list">
               <li>페이지를 다시 열면 가장 최근 저장본이 자동으로 로드됩니다.</li>
-              <li>저장 데이터는 현재 브라우저의 localStorage에 보관됩니다.</li>
-              <li>브라우저 데이터가 삭제되면 저장본도 사라질 수 있습니다.</li>
+              <li>저장 데이터는 Google Sheets 아카이브에 보관됩니다.</li>
+              <li>Google Sheets API 연결이 실패하면 브라우저 임시 저장본을 사용합니다.</li>
               <li>중요한 발행본은 아카이브 저장과 함께 HTML 다운로드 파일도 별도 보관하는 것을 권장합니다.</li>
             </ul>
           </div>
@@ -4658,6 +4658,11 @@
 <script>
 
   const STORAGE_KEY = "unionNewsletterBuilderSaves_v1";
+  const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbzv0eNz71zEk_wT7Dpfp7HTjYZd-cqHDe3Ol_8Qo_BwpX5SUOfRj6t0UeEkpEUEoCnY/exec";
+  const USE_GOOGLE_SHEETS_ARCHIVE = true;
+  let remoteSavedMap = {};
+  let remoteArchiveLoaded = false;
+
   let calendarDate = new Date();
   let loadedSavedDate = "";
   let loadedSavedLanguage = "";
@@ -4967,7 +4972,7 @@
     return /^\d{4}-\d{2}-\d{2}$/.test(dateKey);
   }
 
-  function getSavedMap() {
+  function getLocalSavedMap() {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
     } catch (error) {
@@ -4975,8 +4980,122 @@
     }
   }
 
-  function setSavedMap(savedMap) {
+  function setLocalSavedMap(savedMap) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(savedMap));
+  }
+
+  function getSavedMap() {
+    return USE_GOOGLE_SHEETS_ARCHIVE ? remoteSavedMap : getLocalSavedMap();
+  }
+
+  function setSavedMap(savedMap) {
+    if (USE_GOOGLE_SHEETS_ARCHIVE) {
+      remoteSavedMap = savedMap || {};
+    }
+    setLocalSavedMap(savedMap || {});
+  }
+
+  function callSheetsApi(action, data = {}) {
+    if (!GOOGLE_SHEETS_API_URL) {
+      return Promise.reject(new Error("GOOGLE_SHEETS_API_URL is empty."));
+    }
+
+    return new Promise((resolve, reject) => {
+      const callbackName = `newsletterApiCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      const script = document.createElement("script");
+      const timer = window.setTimeout(() => {
+        cleanup();
+        reject(new Error("Google Sheets API request timed out."));
+      }, 20000);
+
+      function cleanup() {
+        window.clearTimeout(timer);
+        delete window[callbackName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[callbackName] = (response) => {
+        cleanup();
+        if (response && response.ok === false) {
+          reject(new Error(response.error || "Google Sheets API error."));
+          return;
+        }
+        resolve(response);
+      };
+
+      const params = new URLSearchParams();
+      params.set("action", action);
+      params.set("callback", callbackName);
+      params.set("payload", JSON.stringify(data || {}));
+
+      script.onerror = () => {
+        cleanup();
+        reject(new Error("Google Sheets API script load failed."));
+      };
+
+      script.src = `${GOOGLE_SHEETS_API_URL}?${params.toString()}`;
+      document.body.appendChild(script);
+    });
+  }
+
+  function mergeArchiveItemsToMap(items = []) {
+    const nextMap = {};
+
+    items.forEach((item) => {
+      if (!item || !item.dateKey || !item.language) return;
+
+      const entry = getDateEntry(nextMap, item.dateKey);
+      entry[item.language] = {
+        savedAt: item.savedAt || item.updatedAt || `${item.dateKey}T00:00:00`,
+        __remoteStub: true
+      };
+      nextMap[item.dateKey] = entry;
+    });
+
+    remoteSavedMap = nextMap;
+    setLocalSavedMap(nextMap);
+    remoteArchiveLoaded = true;
+    return nextMap;
+  }
+
+  async function loadRemoteArchiveIndex() {
+    if (!USE_GOOGLE_SHEETS_ARCHIVE) return getSavedMap();
+
+    try {
+      const response = await callSheetsApi("list");
+      return mergeArchiveItemsToMap(response.items || []);
+    } catch (error) {
+      console.error("Google Sheets archive index load failed. Falling back to local cache.", error);
+      remoteSavedMap = getLocalSavedMap();
+      remoteArchiveLoaded = true;
+      return remoteSavedMap;
+    }
+  }
+
+  async function fetchRemoteArchiveState(dateKey, language) {
+    if (!USE_GOOGLE_SHEETS_ARCHIVE) return null;
+
+    const response = await callSheetsApi("get", { dateKey, language });
+    return response && response.payload ? response.payload : null;
+  }
+
+  async function saveRemoteArchiveState(dateKey, language, state) {
+    if (!USE_GOOGLE_SHEETS_ARCHIVE) return { ok: true, skipped: true };
+
+    return callSheetsApi("save", {
+      dateKey,
+      language,
+      payload: state
+    });
+  }
+
+  async function deleteRemoteArchiveState(dateKey, language) {
+    if (!USE_GOOGLE_SHEETS_ARCHIVE) return { ok: true, skipped: true };
+
+    return callSheetsApi("delete", {
+      dateKey,
+      language
+    });
   }
 
   function initGlassInteractions() {
@@ -5414,16 +5533,17 @@
     openSaveDateModal();
   }
 
-  function confirmSaveCurrentNewsletter() {
+  async function confirmSaveCurrentNewsletter() {
     const dateKey = getSaveDateFromControls();
     const normalized = isValidDateKey(dateKey) ? dateKey : todayKey();
     const lang = currentLanguage || "ko";
+    const state = collectBuilderState();
 
     const savedMap = getSavedMap();
     const entry = getDateEntry(savedMap, normalized);
 
     // 하루에 언어별 마지막 저장본 1개만 유지합니다.
-    entry[lang] = collectBuilderState();
+    entry[lang] = state;
     savedMap[normalized] = entry;
 
     setSavedMap(savedMap);
@@ -5439,9 +5559,18 @@
       status.innerHTML = "";
     }
 
-    closeSaveDateModal();
-    showToast(`${normalized} ${getLanguageLabel(lang)} 저장되었습니다.`);
+    try {
+      await saveRemoteArchiveState(normalized, lang, state);
+      showToast(`${normalized} ${getLanguageLabel(lang)} Google Sheets에 저장되었습니다.`);
+    } catch (error) {
+      console.error("Google Sheets save failed.", error);
+      showToast(`${normalized} ${getLanguageLabel(lang)} 로컬에 임시 저장되었습니다.`);
+      if (status) {
+        status.textContent = "Google Sheets 저장에 실패해 브라우저 임시 저장본만 갱신되었습니다.";
+      }
+    }
 
+    closeSaveDateModal();
     renderCalendar();
   }
 
@@ -5459,11 +5588,12 @@
     }
   }
 
-  function openCalendar() {
+  async function openCalendar() {
     calendarSelectedDate = "";
     calendarDate = parseDateKey(todayKey());
     closeMonthPicker();
     document.getElementById("calendarModal").classList.add("open");
+    await loadRemoteArchiveIndex();
     renderCalendar();
   }
 
@@ -5714,13 +5844,26 @@
     list.innerHTML = rows.join("");
   }
 
-  function loadSavedNewsletter(dateKey, lang) {
+  async function loadSavedNewsletter(dateKey, lang) {
     const savedMap = getSavedMap();
     const entry = getDateEntry(savedMap, dateKey);
     const language = lang || getLanguageKey();
-    const state = entry[language];
+    let state = entry[language];
 
-    if (!state) {
+    if (!state || state.__remoteStub) {
+      try {
+        state = await fetchRemoteArchiveState(dateKey, language);
+        if (state) {
+          entry[language] = state;
+          savedMap[dateKey] = entry;
+          setSavedMap(savedMap);
+        }
+      } catch (error) {
+        console.error("Google Sheets saved newsletter load failed.", error);
+      }
+    }
+
+    if (!state || state.__remoteStub) {
       alert("해당 날짜/언어의 저장본을 찾을 수 없습니다.");
       return;
     }
@@ -5740,7 +5883,7 @@
     closeCalendar();
   }
 
-  function deleteSavedNewsletter(dateKey, lang) {
+  async function deleteSavedNewsletter(dateKey, lang) {
     const language = lang || getLanguageKey();
     const ok = confirm(`${dateKey} ${getLanguageLabel(language)} 저장본을 삭제할까요?`);
     if (!ok) return;
@@ -5757,6 +5900,12 @@
     }
 
     setSavedMap(savedMap);
+
+    try {
+      await deleteRemoteArchiveState(dateKey, language);
+    } catch (error) {
+      console.error("Google Sheets delete failed.", error);
+    }
 
     if (loadedSavedDate === dateKey && loadedSavedLanguage === language) {
       loadedSavedDate = "";
@@ -6615,26 +6764,48 @@
   initGlassInteractions();
   updateLanguageButtons();
 
-  try {
-    const hasAutoLoaded = autoLoadLatestSavedNewsletter();
+  (async function initializeNewsletterBuilder() {
+    try {
+      await loadRemoteArchiveIndex();
 
-    if (!hasAutoLoaded) {
+      let hasAutoLoaded = false;
+      let latest = findLatestSavedNewsletter();
+
+      if (latest && latest.state && latest.state.__remoteStub) {
+        try {
+          const fullState = await fetchRemoteArchiveState(latest.dateKey, latest.lang);
+          if (fullState) {
+            const savedMap = getSavedMap();
+            const entry = getDateEntry(savedMap, latest.dateKey);
+            entry[latest.lang] = fullState;
+            savedMap[latest.dateKey] = entry;
+            setSavedMap(savedMap);
+          }
+        } catch (error) {
+          console.error("Latest Google Sheets saved newsletter load failed.", error);
+        }
+      }
+
+      hasAutoLoaded = autoLoadLatestSavedNewsletter();
+
+      if (!hasAutoLoaded) {
+        renderSocialEditors();
+        enforceDefaultEditorPanelState();
+        refresh(false);
+      }
+    } catch (error) {
+      console.error("Auto-load failed. Rendering default builder.", error);
+
       renderSocialEditors();
       enforceDefaultEditorPanelState();
       refresh(false);
-    }
-  } catch (error) {
-    console.error("Auto-load failed. Rendering default builder.", error);
 
-    renderSocialEditors();
-    enforceDefaultEditorPanelState();
-    refresh(false);
-
-    const status = document.getElementById("status");
-    if (status) {
-      status.textContent = "저장본 자동 로드에 실패해 기본 템플릿으로 열었습니다.";
+      const status = document.getElementById("status");
+      if (status) {
+        status.textContent = "저장본 자동 로드에 실패해 기본 템플릿으로 열었습니다.";
+      }
     }
-  }
+  })();
 </script>
 </body>
 </html>
